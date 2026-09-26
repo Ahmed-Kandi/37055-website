@@ -79,7 +79,7 @@ var Store = (function () {
   return { read: read, update: update, token: token, setToken: setToken, config: config, setConfig: setConfig, checkToken: checkToken };
 })();
 
-// ---------- Auth (intentionally simple – users are listed in data/users.json) ----------
+// ---------- Auth (intentionally simple - users are listed in data/users.json) ----------
 var Auth = {
   async login(username, password) {
     var res = await fetch("data/users.json?t=" + Date.now(), { cache: "no-store" });

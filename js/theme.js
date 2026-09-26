@@ -35,7 +35,7 @@
       root.setProperty("--primary", avg(primary));
       if (accent) root.setProperty("--accent", avg(accent));
       else root.setProperty("--accent", lighten(primary));
-    } catch (e) { /* canvas blocked (e.g. file://) – keep fallback colors */ }
+    } catch (e) { /* canvas blocked (e.g. file://) - keep fallback colors */ }
   };
 
   function avg(c) {

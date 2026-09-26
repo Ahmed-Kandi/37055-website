@@ -114,7 +114,7 @@
         chips(t.assignees) + (t.description ? "<p>" + esc(t.description) + "</p>" : "") +
         '<div class="item-actions"><button class="btn small secondary" data-toggle="' + esc(t.id) + '">' + (t.done ? "Reopen" : "Mark done") +
         '</button><button class="btn small danger" data-del-task="' + esc(t.id) + '">Delete</button></div></div>';
-    }).join("") : '<div class="empty">' + (tasks.length ? "No tasks match." : "No tasks yet. Create one!") + "</div>";
+    }).join("") : '<div class="empty">' + (tasks.length ? "No tasks match." : "No tasks yet.") + "</div>";
   }
 
   async function loadTasks() {
@@ -172,10 +172,10 @@
     Store.setToken($("gh-token").value.trim());
     updateMode();
     if (!Store.token()) return msg("settings-msg", "No token set. Data will be saved in this browser only.", "info");
-    msg("settings-msg", "Testing token…", "info");
+    msg("settings-msg", "Testing token...", "info");
     try {
       await Store.checkToken();
-      msg("settings-msg", "Connected! Changes will now be committed to " + Store.config().repo + ".", "success");
+      msg("settings-msg", "Connected. Changes will now be committed to " + Store.config().repo + ".", "success");
       loadAttendance(); loadTasks();
     } catch (ex) { msg("settings-msg", ex.message, "error"); }
   });

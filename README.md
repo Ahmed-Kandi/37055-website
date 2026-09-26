@@ -17,7 +17,7 @@ Logins are in `data/users.json` (plain text, not secure by design). Add or remov
 ## Where the data is saved
 - `data/attendance.json`: `{ date, names[], submittedBy, submittedAt }`
 - `data/tasks.json`: `{ title, assignees[], description, done, createdBy, createdAt }`
-- `data/notes.json`: `{ title, body, createdBy, createdAt, updatedAt }`. The Notes tab is only shown to the accounts listed in `NOTES_USERS` in `js/dashboard.js` (currently `taskmanager`).
+- `data/notes.json`: `{ title, body, createdBy, createdAt, updatedAt }`. The Notes tab is only shown to the accounts listed in `NOTES_USERS` in `js/dashboard.js` (currently `admin` and `taskmanager`).
 
 A static site can't write to the repo by itself. To save to these files, sign in, open **Settings**, and paste a GitHub
 fine-grained token (limited to this repo, **Contents: Read and write**). After that, every submit makes a commit

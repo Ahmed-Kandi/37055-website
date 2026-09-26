@@ -4,7 +4,7 @@
   var tasks = [];
   var notes = [];
   var editingNote = null;
-  var NOTES_USERS = ["taskmanager"]; // accounts that can see the Notes tab
+  var NOTES_USERS = ["admin", "taskmanager"]; // accounts that can see the Notes tab
   var canNotes = NOTES_USERS.indexOf(user) !== -1;
 
   if (canNotes) {

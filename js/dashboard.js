@@ -2,6 +2,18 @@
   var $ = function (id) { return document.getElementById(id); };
   var user = Auth.user();
   var tasks = [];
+  var notes = [];
+  var editingNote = null;
+  var NOTES_USERS = ["taskmanager"]; // accounts that can see the Notes tab
+  var canNotes = NOTES_USERS.indexOf(user) !== -1;
+
+  if (canNotes) {
+    document.querySelector('.tab[data-tab="notes"]').hidden = false;
+    $("notes").hidden = false;
+  } else {
+    document.querySelector('.tab[data-tab="notes"]').remove();
+    $("notes").remove();
+  }
 
   $("who").textContent = user;
   $("logout").onclick = function (e) { e.preventDefault(); Auth.logout(); };
@@ -160,6 +172,90 @@
     } catch (ex) { alert(ex.message); e.target.disabled = false; }
   });
 
+  // ---------- Notes ----------
+  function renderNotes() {
+    if (!canNotes) return;
+    var q = $("note-search").value.trim().toLowerCase();
+    var list = notes.filter(function (n) {
+      return !q || (n.title + " " + n.body).toLowerCase().includes(q);
+    }).sort(function (a, b) { return (b.updatedAt || b.createdAt).localeCompare(a.updatedAt || a.createdAt); });
+
+    $("note-list").innerHTML = list.length ? list.map(function (n) {
+      var edited = n.updatedAt && n.updatedAt !== n.createdAt ? " (edited " + esc(new Date(n.updatedAt).toLocaleDateString()) + ")" : "";
+      return '<div class="item"><div class="item-head"><h4>' + esc(n.title) + '</h4><span class="meta">' +
+        esc(new Date(n.createdAt).toLocaleDateString()) + edited + " &middot; by " + esc(n.createdBy) + "</span></div>" +
+        "<p>" + esc(n.body) + "</p>" +
+        '<div class="item-actions"><button class="btn small secondary" data-edit-note="' + esc(n.id) + '">Edit</button>' +
+        '<button class="btn small danger" data-del-note="' + esc(n.id) + '">Delete</button></div></div>';
+    }).join("") : '<div class="empty">' + (notes.length ? "No notes match." : "No notes yet.") + "</div>";
+  }
+
+  async function loadNotes() {
+    if (!canNotes) return;
+    try { notes = (await Store.read("notes.json")).items; renderNotes(); }
+    catch (e) { $("note-list").innerHTML = '<div class="empty">' + esc(e.message) + "</div>"; }
+  }
+
+  function resetNoteForm() {
+    editingNote = null;
+    $("note-form").reset();
+    $("note-form-title").textContent = "New Note";
+    $("note-submit").textContent = "Save Note";
+    $("note-cancel").hidden = true;
+  }
+
+  if (canNotes) {
+    $("note-search").oninput = renderNotes;
+    $("note-cancel").onclick = resetNoteForm;
+
+    $("note-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var title = $("note-title").value.trim(), body = $("note-body").value.trim();
+      if (!title || !body) return msg("note-msg", "Add a title and a note.", "error");
+      var now = new Date().toISOString(), id = editingNote;
+      busy(this, true);
+      try {
+        notes = await Store.update("notes.json", function (list) {
+          if (id) {
+            list.forEach(function (n) { if (n.id === id) { n.title = title; n.body = body; n.updatedAt = now; } });
+          } else {
+            list.push({ id: uid(), title: title, body: body, createdBy: user, createdAt: now, updatedAt: now });
+          }
+          return list;
+        }, (id ? "Edit note: " : "Add note: ") + title);
+        resetNoteForm();
+        renderNotes();
+        msg("note-msg", id ? "Note updated." : "Note saved.", "success");
+      } catch (ex) { msg("note-msg", ex.message, "error"); }
+      busy(this, false);
+    });
+
+    $("note-list").addEventListener("click", async function (e) {
+      var edit = e.target.dataset.editNote, del = e.target.dataset.delNote;
+      if (edit) {
+        var n = notes.find(function (x) { return x.id === edit; });
+        if (!n) return;
+        editingNote = n.id;
+        $("note-title").value = n.title;
+        $("note-body").value = n.body;
+        $("note-form-title").textContent = "Edit Note";
+        $("note-submit").textContent = "Update Note";
+        $("note-cancel").hidden = false;
+        $("note-title").focus();
+        return;
+      }
+      if (!del || !confirm("Delete this note?")) return;
+      e.target.disabled = true;
+      try {
+        notes = await Store.update("notes.json", function (list) {
+          return list.filter(function (n) { return n.id !== del; });
+        }, "Delete note");
+        if (editingNote === del) resetNoteForm();
+        renderNotes();
+      } catch (ex) { alert(ex.message); e.target.disabled = false; }
+    });
+  }
+
   // ---------- Settings ----------
   var cfg = Store.config();
   $("gh-repo").value = cfg.repo;
@@ -176,7 +272,7 @@
     try {
       await Store.checkToken();
       msg("settings-msg", "Connected. Changes will now be committed to " + Store.config().repo + ".", "success");
-      loadAttendance(); loadTasks();
+      loadAttendance(); loadTasks(); loadNotes();
     } catch (ex) { msg("settings-msg", ex.message, "error"); }
   });
 
@@ -185,9 +281,10 @@
     $("gh-token").value = "";
     updateMode();
     msg("settings-msg", "Token removed from this browser.", "info");
-    loadAttendance(); loadTasks();
+    loadAttendance(); loadTasks(); loadNotes();
   };
 
   loadAttendance();
   loadTasks();
+  loadNotes();
 })();

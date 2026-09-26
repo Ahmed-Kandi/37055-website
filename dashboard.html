@@ -32,6 +32,7 @@
       <div class="tabs" role="tablist">
         <button class="tab active" data-tab="attendance">Attendance</button>
         <button class="tab" data-tab="tasks">Tasks</button>
+        <button class="tab" data-tab="notes" hidden>Notes</button>
         <button class="tab" data-tab="settings">Settings</button>
       </div>
 
@@ -79,6 +80,29 @@
               <input id="task-search" placeholder="Filter by name...">
             </div>
             <div class="list" id="task-list"><div class="empty">Loading...</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notes (taskmanager only) -->
+      <section class="panel" id="notes" style="padding:0" hidden>
+        <div class="two-col">
+          <form class="card" id="note-form">
+            <h3 style="margin-top:0" id="note-form-title">New Note</h3>
+            <label for="note-title">Title</label>
+            <input id="note-title" required>
+            <label for="note-body">Note</label>
+            <textarea id="note-body" style="min-height:180px" required></textarea>
+            <button class="btn" type="submit" style="margin-top:16px;width:100%" id="note-submit">Save Note</button>
+            <button class="btn secondary" type="button" style="margin-top:8px;width:100%" id="note-cancel" hidden>Cancel Edit</button>
+            <div class="msg" id="note-msg"></div>
+          </form>
+          <div>
+            <div class="toolbar">
+              <h3 style="margin:0">Notes</h3>
+              <input id="note-search" placeholder="Search notes..." style="margin-left:auto">
+            </div>
+            <div class="list" id="note-list"><div class="empty">Loading...</div></div>
           </div>
         </div>
       </section>

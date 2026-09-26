@@ -6,6 +6,10 @@
   var editingNote = null;
   var isAdmin = Auth.role() === "admin";
 
+  // Notes is visible to everyone (read-only for members).
+  document.querySelector('.tab[data-tab="notes"]').hidden = false;
+  $("notes").hidden = false;
+
   // Members get read-only Tasks and Notes; everything else is admin only.
   if (!isAdmin) {
     ["attendance", "settings"].forEach(function (id) {

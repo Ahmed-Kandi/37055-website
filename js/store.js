@@ -28,12 +28,26 @@ var Store = (function () {
   function b64decode(s) { return decodeURIComponent(escape(atob(s.replace(/\n/g, "")))); }
   function b64encode(s) { return btoa(unescape(encodeURIComponent(s))); }
 
+  function repoApi(path) { return "https://api.github.com/repos/" + config().repo + path; }
+
+  // Turns a failed GitHub response into an error message that says what to fix.
+  async function ghError(res, action) {
+    var detail = "";
+    try { detail = (await res.json()).message || ""; } catch (e) {}
+    var hint = {
+      401: "The token is invalid or expired. Create a new one and paste it in Settings.",
+      403: "The token is not allowed to write to this repository. Edit the token on GitHub and set Repository permissions > Contents to \"Read and write\", and make sure this repository is selected.",
+      404: "GitHub could not find the repository or branch with this token. Check the Repository and Branch fields in Settings, and that the token has access to this repository."
+    }[res.status] || "";
+    return new Error("GitHub " + action + " failed (" + res.status + (detail ? ": " + detail : "") + "). " + hint);
+  }
+
   // Returns { items, sha }.
   async function read(file) {
     if (token()) {
       var res = await fetch(apiUrl(file), { headers: headers(), cache: "no-store" });
       if (res.status === 404) return { items: [], sha: null };
-      if (!res.ok) throw new Error("GitHub read failed (" + res.status + "). Check your token in Settings.");
+      if (!res.ok) throw await ghError(res, "read");
       var json = await res.json();
       return { items: JSON.parse(b64decode(json.content) || "[]"), sha: json.sha };
     }
@@ -61,18 +75,30 @@ var Store = (function () {
         branch: config().branch
       };
       if (cur.sha) body.sha = cur.sha;
-      var res = await fetch(apiUrl(file).split("?")[0], { method: "PUT", headers: headers(), body: JSON.stringify(body) });
+      var res = await fetch(repoApi("/contents/data/" + file), { method: "PUT", headers: headers(), body: JSON.stringify(body) });
       if (res.ok) return items;
-      if (res.status !== 409 && res.status !== 422) throw new Error("GitHub save failed (" + res.status + "). Check your token in Settings.");
+      var conflict = res.status === 409;
+      if (res.status === 422) {
+        var err = await ghError(res.clone(), "save");
+        if (!/sha/i.test(err.message)) throw err;
+        conflict = true;
+      }
+      if (!conflict) throw await ghError(res, "save");
     }
     throw new Error("Save conflicted with another change. Please try again.");
   }
 
+  // Checks the token can see the repo and branch, and can actually write.
   async function checkToken() {
-    var res = await fetch("https://api.github.com/repos/" + config().repo, { headers: headers() });
-    if (!res.ok) throw new Error("Token rejected (" + res.status + ")");
-    var json = await res.json();
-    if (!json.permissions || !json.permissions.push) throw new Error("Token can read the repo but cannot write to it.");
+    var res = await fetch(repoApi(""), { headers: headers() });
+    if (!res.ok) throw await ghError(res, "repository check");
+    res = await fetch(repoApi("/branches/" + encodeURIComponent(config().branch)), { headers: headers() });
+    if (!res.ok) throw await ghError(res, "branch check");
+    // Creating a git blob needs write access but does not change any file or branch.
+    res = await fetch(repoApi("/git/blobs"), {
+      method: "POST", headers: headers(), body: JSON.stringify({ content: "write check", encoding: "utf-8" })
+    });
+    if (!res.ok) throw await ghError(res, "write check");
     return true;
   }
 

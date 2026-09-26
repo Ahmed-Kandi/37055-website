@@ -1,17 +1,17 @@
-/* Theme colors. js/theme.js overwrites --primary / --accent with colors
-   sampled from img/logo.png; these are the fallbacks. */
+/* Colors taken from img/logo.png */
 :root {
-  --primary: #1f4fd1;
-  --accent: #f5a623;
-  --bg: #0e1116;
-  --surface: #171b22;
-  --surface-2: #1f252e;
-  --text: #eef1f5;
-  --muted: #9aa4b2;
-  --border: #2a313c;
-  --danger: #e5484d;
-  --ok: #30a46c;
-  --radius: 14px;
+  --primary: #f26a0a;     /* star orange */
+  --accent: #f5a81c;      /* star gold */
+  --on-primary: #0a0820;
+  --bg: #06061a;          /* logo background */
+  --surface: #0d0c26;
+  --surface-2: #15133a;
+  --text: #fff8e6;
+  --muted: #a9a6c6;
+  --border: #25224f;
+  --danger: #ff5a5f;
+  --ok: #3ccf8e;
+  --radius: 12px;
   --max: 1100px;
 }
 
@@ -38,13 +38,13 @@ img { max-width: 100%; }
 }
 .nav .container { display: flex; align-items: center; gap: 16px; height: 64px; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 800; }
-.brand img { height: 40px; width: 40px; object-fit: contain; }
+.brand img { height: 40px; width: 40px; object-fit: contain; border-radius: 8px; }
 .nav-links { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
 .nav-links a {
   color: var(--muted); text-decoration: none; padding: 8px 12px; border-radius: 8px; font-weight: 600; font-size: .95rem;
 }
 .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface-2); }
-.nav-links a.cta { background: var(--primary); color: #fff; }
+.nav-links a.cta { background: var(--primary); color: var(--on-primary); }
 .nav-links a.cta:hover { filter: brightness(1.1); }
 
 /* ---------- Hero ---------- */
@@ -56,7 +56,7 @@ img { max-width: 100%; }
 .hero h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); line-height: 1.1; margin: 12px 0 16px; }
 .hero p { color: var(--muted); font-size: 1.15rem; max-width: 55ch; }
 .hero-logo { display: flex; justify-content: center; }
-.hero-logo img { width: min(340px, 80%); }
+.hero-logo img { width: min(340px, 80%); border-radius: var(--radius); border: 1px solid var(--border); }
 .eyebrow {
   margin: 0; color: var(--accent); font-weight: 700; font-size: .85rem;
   letter-spacing: .06em; text-transform: uppercase;
@@ -67,7 +67,7 @@ img { max-width: 100%; }
 .btn {
   display: inline-block; border: 0; cursor: pointer; text-decoration: none;
   padding: 11px 20px; border-radius: 10px; font-weight: 700; font-size: 1rem;
-  background: var(--primary); color: #fff; font-family: inherit;
+  background: var(--primary); color: var(--on-primary); font-family: inherit;
 }
 .btn:hover { filter: brightness(1.1); }
 .btn.secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--border); }
@@ -109,7 +109,7 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 /* ---------- Sign in ---------- */
 .auth-wrap { min-height: calc(100vh - 64px); display: grid; place-items: center; padding: 40px 20px; }
 .auth-card { width: 100%; max-width: 400px; }
-.auth-card .logo { display: block; margin: 0 auto 8px; height: 90px; object-fit: contain; }
+.auth-card .logo { display: block; margin: 0 auto 8px; height: 90px; object-fit: contain; border-radius: 10px; }
 .auth-card h1 { text-align: center; margin: 0 0 4px; }
 .auth-card .btn { width: 100%; margin-top: 20px; }
 
@@ -160,3 +160,4 @@ footer .container { display: flex; justify-content: space-between; flex-wrap: wr
 @media (max-width: 520px) {
   .brand span { display: none; }
 }
+.hero .eyebrow { color: var(--accent); font-size: .9rem; }

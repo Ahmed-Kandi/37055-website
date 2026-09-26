@@ -9,7 +9,7 @@ Static site: runs on GitHub Pages with no build step.
 | `dashboard.html` | Attendance and task pages (requires sign in) |
 
 ## Logo / theme
-Put the team logo at **`img/logo.png`**. `js/theme.js` picks the main colors out of the logo and uses them as the site's colors. If the logo is missing, the fallback colors in `css/style.css` (`:root`) are used.
+The logo is `img/logo.png`. The site colors are set to match it in `css/style.css` (`:root`).
 
 ## Logins
 Logins are in `data/users.json` (plain text, not secure by design). Add or remove entries there.

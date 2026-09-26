@@ -4,22 +4,29 @@
   var tasks = [];
   var notes = [];
   var editingNote = null;
-  var NOTES_USERS = ["admin", "taskmanager"]; // accounts that can see the Notes tab
-  var canNotes = NOTES_USERS.indexOf(user) !== -1;
+  var isAdmin = Auth.role() === "admin";
 
-  if (canNotes) {
-    document.querySelector('.tab[data-tab="notes"]').hidden = false;
-    $("notes").hidden = false;
-  } else {
-    document.querySelector('.tab[data-tab="notes"]').remove();
-    $("notes").remove();
+  // Members get read-only Tasks and Notes; everything else is admin only.
+  if (!isAdmin) {
+    ["attendance", "settings"].forEach(function (id) {
+      document.querySelector('.tab[data-tab="' + id + '"]').hidden = true;
+      $(id).hidden = true;
+      $(id).classList.remove("active");
+    });
+    ["task-form", "note-form"].forEach(function (id) {
+      $(id).hidden = true;
+      $(id).parentNode.classList.add("single");
+    });
+    document.querySelector('.tab[data-tab="attendance"]').classList.remove("active");
+    document.querySelector('.tab[data-tab="tasks"]').classList.add("active");
+    $("tasks").classList.add("active");
   }
 
   $("who").textContent = user;
   $("logout").onclick = function (e) { e.preventDefault(); Auth.logout(); };
 
   function updateMode() {
-    $("mode").textContent = Store.token()
+    $("mode").textContent = !isAdmin ? "View only" : Store.token()
       ? "Saving to GitHub (" + Store.config().repo + ")"
       : "Saving in this browser only (add a GitHub token in Settings)";
   }
@@ -34,7 +41,7 @@
     };
   });
   var saved = sessionStorage.getItem("tab");
-  if (saved) { var b = document.querySelector('.tab[data-tab="' + saved + '"]'); if (b) b.click(); }
+  if (saved) { var b = document.querySelector('.tab[data-tab="' + saved + '"]:not([hidden])'); if (b) b.click(); }
 
   // ---------- Helpers ----------
   function esc(s) {
@@ -124,8 +131,9 @@
       return '<div class="item' + (t.done ? " done" : "") + '"><div class="item-head"><h4>' + esc(t.title) + '</h4><span class="meta">' +
         esc(new Date(t.createdAt).toLocaleDateString()) + " &middot; by " + esc(t.createdBy) + "</span></div>" +
         chips(t.assignees) + (t.description ? "<p>" + esc(t.description) + "</p>" : "") +
-        '<div class="item-actions"><button class="btn small secondary" data-toggle="' + esc(t.id) + '">' + (t.done ? "Reopen" : "Mark done") +
-        '</button><button class="btn small danger" data-del-task="' + esc(t.id) + '">Delete</button></div></div>';
+        (!isAdmin ? (t.done ? '<div class="meta" style="margin-top:10px">Completed</div>' : "") + "</div>" : "") +
+        (isAdmin ? '<div class="item-actions"><button class="btn small secondary" data-toggle="' + esc(t.id) + '">' + (t.done ? "Reopen" : "Mark done") +
+        '</button><button class="btn small danger" data-del-task="' + esc(t.id) + '">Delete</button></div></div>' : "");
     }).join("") : '<div class="empty">' + (tasks.length ? "No tasks match." : "No tasks yet.") + "</div>";
   }
 
@@ -174,7 +182,6 @@
 
   // ---------- Notes ----------
   function renderNotes() {
-    if (!canNotes) return;
     var q = $("note-search").value.trim().toLowerCase();
     var list = notes.filter(function (n) {
       return !q || (n.title + " " + n.body).toLowerCase().includes(q);
@@ -184,14 +191,13 @@
       var edited = n.updatedAt && n.updatedAt !== n.createdAt ? " (edited " + esc(new Date(n.updatedAt).toLocaleDateString()) + ")" : "";
       return '<div class="item"><div class="item-head"><h4>' + esc(n.title) + '</h4><span class="meta">' +
         esc(new Date(n.createdAt).toLocaleDateString()) + edited + " &middot; by " + esc(n.createdBy) + "</span></div>" +
-        "<p>" + esc(n.body) + "</p>" +
+        "<p>" + esc(n.body) + "</p>" + (!isAdmin ? "</div>" :
         '<div class="item-actions"><button class="btn small secondary" data-edit-note="' + esc(n.id) + '">Edit</button>' +
-        '<button class="btn small danger" data-del-note="' + esc(n.id) + '">Delete</button></div></div>';
+        '<button class="btn small danger" data-del-note="' + esc(n.id) + '">Delete</button></div></div>');
     }).join("") : '<div class="empty">' + (notes.length ? "No notes match." : "No notes yet.") + "</div>";
   }
 
   async function loadNotes() {
-    if (!canNotes) return;
     try { notes = (await Store.read("notes.json")).items; renderNotes(); }
     catch (e) { $("note-list").innerHTML = '<div class="empty">' + esc(e.message) + "</div>"; }
   }
@@ -204,7 +210,7 @@
     $("note-cancel").hidden = true;
   }
 
-  if (canNotes) {
+  if (isAdmin) {
     $("note-search").oninput = renderNotes;
     $("note-cancel").onclick = resetNoteForm;
 
@@ -284,7 +290,7 @@
     loadAttendance(); loadTasks(); loadNotes();
   };
 
-  loadAttendance();
+  if (isAdmin) loadAttendance();
   loadTasks();
   loadNotes();
 })();

@@ -1,4 +1,4 @@
 [
-  { "username": "admin", "password": "37055" },
-  { "username": "taskmanager", "password": "37055" }
+  { "username": "admin", "password": "37055", "role": "admin" },
+  { "username": "member", "password": "nomoreitkan", "role": "member" }
 ]

@@ -6,18 +6,23 @@ Static site: runs on GitHub Pages with no build step.
 |---|---|
 | `index.html` | Public homepage: rookie-team intro and subteams |
 | `signin.html` | Member sign in |
-| `dashboard.html` | Attendance and task pages (requires sign in) |
+| `dashboard.html` | Attendance, tasks and notes (requires sign in) |
 
 ## Logo / theme
 The logo is `img/logo.png`. The site colors are set to match it in `css/style.css` (`:root`).
 
 ## Logins
-Logins are in `data/users.json` (plain text, not secure by design). Add or remove entries there.
+Logins are in `data/users.json` (plain text, not secure by design). Add or remove entries there. Each login has a role:
+
+| Role | Access |
+|---|---|
+| `admin` | Everything: attendance, tasks, notes, settings (create, edit, delete) |
+| `member` | View tasks and notes only |
 
 ## Where the data is saved
 - `data/attendance.json`: `{ date, names[], submittedBy, submittedAt }`
 - `data/tasks.json`: `{ title, assignees[], description, done, createdBy, createdAt }`
-- `data/notes.json`: `{ title, body, createdBy, createdAt, updatedAt }`. The Notes tab is only shown to the accounts listed in `NOTES_USERS` in `js/dashboard.js` (currently `admin` and `taskmanager`).
+- `data/notes.json`: `{ title, body, createdBy, createdAt, updatedAt }`.
 
 A static site can't write to the repo by itself. To save to these files, sign in, open **Settings**, and paste a GitHub
 fine-grained token (limited to this repo, **Contents: Read and write**). After that, every submit makes a commit

@@ -87,8 +87,11 @@ var Auth = {
     var u = users.find(function (x) { return x.username.toLowerCase() === username.trim().toLowerCase() && x.password === password; });
     if (!u) return false;
     sessionStorage.setItem("user", u.username);
+    sessionStorage.setItem("role", u.role || "member");
     return true;
   },
-  user() { return sessionStorage.getItem("user"); },
-  logout() { sessionStorage.removeItem("user"); location.href = "signin.html"; }
+  // "admin" can view and edit everything; "member" can only view tasks and notes.
+  user() { return sessionStorage.getItem("role") ? sessionStorage.getItem("user") : null; },
+  role() { return sessionStorage.getItem("role"); },
+  logout() { ["user", "role", "tab"].forEach(function (k) { sessionStorage.removeItem(k); }); location.href = "signin.html"; }
 };

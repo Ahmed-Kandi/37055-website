@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign In – Team 37055</title>
+  <link rel="icon" href="img/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/theme.js"></script>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <a class="brand" href="index.html"><img src="img/logo.png" alt="Team 37055 logo"><span>Team 37055</span></a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a class="cta active" href="signin.html">Sign In</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="auth-wrap">
+    <form class="card auth-card" id="login">
+      <img class="logo" src="img/logo.png" alt="">
+      <h1>Team Sign In</h1>
+      <p class="hint" style="text-align:center">Members only: attendance &amp; tasks</p>
+      <label for="username">Username</label>
+      <input id="username" autocomplete="username" required>
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+      <button class="btn" type="submit">Sign In</button>
+      <div class="msg error" id="err"></div>
+    </form>
+  </main>
+
+  <script src="js/store.js"></script>
+  <script>
+    if (Auth.user()) location.href = "dashboard.html";
+    document.getElementById("login").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var err = document.getElementById("err");
+      err.classList.remove("show");
+      try {
+        var ok = await Auth.login(username.value, password.value);
+        if (ok) location.href = "dashboard.html";
+        else { err.textContent = "Incorrect username or password."; err.classList.add("show"); }
+      } catch (ex) {
+        err.textContent = "Couldn't load the login list. Are you opening the site through a web server?";
+        err.classList.add("show");
+      }
+    });
+  </script>
+</body>
+</html>

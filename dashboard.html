@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard – Team 37055</title>
+  <link rel="icon" href="img/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/store.js"></script>
+  <script>if (!Auth.user()) location.replace("signin.html");</script>
+  <script src="js/theme.js"></script>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <a class="brand" href="index.html"><img src="img/logo.png" alt="Team 37055 logo"><span>Team 37055</span></a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="#" id="logout">Sign Out</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="dash">
+    <div class="container">
+      <div class="dash-head">
+        <div>
+          <h1>Team Dashboard</h1>
+          <div class="hint">Signed in as <b id="who"></b> &middot; <span id="mode"></span></div>
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-tab="attendance">Attendance</button>
+        <button class="tab" data-tab="tasks">Tasks</button>
+        <button class="tab" data-tab="settings">Settings</button>
+      </div>
+
+      <!-- Attendance -->
+      <section class="panel active" id="attendance" style="padding:0">
+        <div class="two-col">
+          <form class="card" id="att-form">
+            <h3 style="margin-top:0">Record Attendance</h3>
+            <label for="att-date">Date</label>
+            <input type="date" id="att-date" required>
+            <label for="att-names">Who attended?</label>
+            <textarea id="att-names" placeholder="One name per line, or separated by commas" required></textarea>
+            <button class="btn" type="submit" style="margin-top:16px;width:100%">Submit Attendance</button>
+            <div class="msg" id="att-msg"></div>
+          </form>
+          <div>
+            <div class="toolbar"><h3 style="margin:0">Past Meetings</h3></div>
+            <div class="list" id="att-list"><div class="empty">Loading&hellip;</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tasks -->
+      <section class="panel" id="tasks" style="padding:0">
+        <div class="two-col">
+          <form class="card" id="task-form">
+            <h3 style="margin-top:0">Create Task</h3>
+            <label for="task-title">Task</label>
+            <input id="task-title" placeholder="e.g. Tune intake PID" required>
+            <label for="task-assignees">Assignees</label>
+            <input id="task-assignees" placeholder="Names, separated by commas" required>
+            <label for="task-desc">Description</label>
+            <textarea id="task-desc" placeholder="What needs to be done?"></textarea>
+            <button class="btn" type="submit" style="margin-top:16px;width:100%">Create Task</button>
+            <div class="msg" id="task-msg"></div>
+          </form>
+          <div>
+            <div class="toolbar">
+              <h3 style="margin:0">Tasks</h3>
+              <select id="task-filter" style="margin-left:auto">
+                <option value="open">Open</option>
+                <option value="done">Completed</option>
+                <option value="all">All</option>
+              </select>
+              <input id="task-search" placeholder="Filter by name&hellip;">
+            </div>
+            <div class="list" id="task-list"><div class="empty">Loading&hellip;</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section class="panel" id="settings" style="padding:0">
+        <form class="card" id="settings-form" style="max-width:640px">
+          <h3 style="margin-top:0">Save data to GitHub</h3>
+          <p class="hint">Attendance and tasks are stored in <code>data/attendance.json</code> and <code>data/tasks.json</code> in the repository. To save changes there, paste a GitHub token with write access to the repo. It is stored only in this browser.</p>
+          <p class="hint">Without a token, anything you submit is saved <b>only in this browser</b>.</p>
+          <label for="gh-token">GitHub token</label>
+          <input id="gh-token" type="password" placeholder="github_pat_…" autocomplete="off">
+          <div class="hint">Create one at GitHub &rarr; Settings &rarr; Developer settings &rarr; Fine-grained tokens, limited to this repository with <b>Contents: Read and write</b>.</div>
+          <label for="gh-repo">Repository</label>
+          <input id="gh-repo">
+          <label for="gh-branch">Branch</label>
+          <input id="gh-branch">
+          <div class="btn-row" style="margin-top:18px">
+            <button class="btn" type="submit">Save &amp; Test</button>
+            <button class="btn danger" type="button" id="gh-clear">Remove token</button>
+          </div>
+          <div class="msg" id="settings-msg"></div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

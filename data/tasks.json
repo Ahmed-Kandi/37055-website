@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "muiz6ltv6vbzs",
+    "title": "Improving CAD Design",
+    "assignees": [
+      "Yasin",
+      "Alee",
+      "Ahmed"
+    ],
+    "description": "CAD Version 2:\n- CAD the improved sorting system, needs to be more consistent\n- Work on turret for the shooters",
+    "done": false,
+    "createdBy": "admin",
+    "createdAt": "2026-09-26T22:42:46.151Z"
+  }
+]

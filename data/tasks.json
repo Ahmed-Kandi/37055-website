@@ -94,5 +94,16 @@
     "done": false,
     "createdBy": "admin",
     "createdAt": "2026-10-03T22:04:21.641Z"
+  },
+  {
+    "id": "musxxkvrkz1ke",
+    "title": "Look into other teams",
+    "assignees": [
+      "Faris"
+    ],
+    "description": "Reseach other teams and learn more about strategy",
+    "done": false,
+    "createdBy": "admin",
+    "createdAt": "2026-10-03T22:05:27.160Z"
   }
 ]

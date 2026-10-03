@@ -105,5 +105,16 @@
     "done": false,
     "createdBy": "admin",
     "createdAt": "2026-10-03T22:05:27.160Z"
+  },
+  {
+    "id": "musxzb7az8i8l",
+    "title": "Making Slideshow",
+    "assignees": [
+      "Zakariya"
+    ],
+    "description": "make a slideshow to present to sponsors",
+    "done": false,
+    "createdBy": "admin",
+    "createdAt": "2026-10-03T22:06:47.926Z"
   }
 ]

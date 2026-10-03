@@ -19,9 +19,10 @@
       "Saif"
     ],
     "description": "General idea for autonomous that can be changed depending on the robot.",
-    "done": false,
+    "done": true,
     "createdBy": "admin",
-    "createdAt": "2026-09-26T22:43:46.944Z"
+    "createdAt": "2026-09-26T22:43:46.944Z",
+    "completedAt": "2026-10-03T22:03:35.028Z"
   },
   {
     "id": "muizr9vzepvvs",
